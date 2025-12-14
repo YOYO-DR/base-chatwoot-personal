@@ -8,9 +8,10 @@ rm -f /app/tmp/pids/server.pid
 # echo "Waiting for database..."
 # sleep 5
 
-# Ejecutar migraciones de base de datos
-echo "Running database migrations..."
-bundle exec rails db:migrate
+# Ejecutar preparación de base de datos (crea, carga esquema o migra según sea necesario)
+# db:prepare es más robusto para instalaciones nuevas ya que usa schema:load en lugar de correr todas las migraciones históricas
+echo "Running database preparation..."
+bundle exec rails db:prepare
 
 # Iniciar el servidor
 echo "Starting Rails server..."
