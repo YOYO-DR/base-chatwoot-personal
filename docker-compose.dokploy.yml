@@ -5,6 +5,9 @@ x-base: &base
   env_file: .env
   volumes:
     - storage_data:/app/storage
+  networks:
+      - dokploy-network
+      - default
 
 services:
   rails:
@@ -31,3 +34,7 @@ services:
 
 volumes:
   storage_data:
+
+networks:
+  dokploy-network:
+    external: true
