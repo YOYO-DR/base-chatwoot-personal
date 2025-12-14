@@ -5,9 +5,6 @@ x-base: &base
   env_file: .env
   volumes:
     - storage_data:/app/storage
-  networks:
-      - dokploy-network
-      - default
 
 services:
   rails:
@@ -22,6 +19,9 @@ services:
       - storage_data:/app/storage
       - ./start.sh:/app/start.sh
     restart: always
+    networks:
+      - dokploy-network
+      - default
 
   sidekiq:
     <<: *base
@@ -31,6 +31,9 @@ services:
       - INSTALLATION_ENV=docker
     command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
     restart: always
+    networks:
+      - dokploy-network
+      - default
 
 volumes:
   storage_data:
