@@ -8,10 +8,22 @@ rm -f /app/tmp/pids/server.pid
 # echo "Waiting for database..."
 # sleep 5
 
-# Ejecutar preparación de base de datos (crea, carga esquema o migra según sea necesario)
-# db:prepare es más robusto para instalaciones nuevas ya que usa schema:load en lugar de correr todas las migraciones históricas
-echo "Running database preparation..."
-bundle exec rails db:prepare
+# Ejecutar preparación de base de datos
+# Verificamos si la base de datos ya tiene la tabla schema_migrations
+# Si existe, corremos migraciones. Si no, cargamos el esquema (más seguro para instalaciones nuevas)
+
+export PGHOST=$POSTGRES_HOST
+export PGUSER=$POSTGRES_USERNAME
+export PGPASSWORD=$POSTGRES_PASSWORD
+export PGDATABASE=$POSTGRES_DATABASE
+
+if psql -c "SELECT 1 FROM schema_migrations LIMIT 1;" > /dev/null 2>&1; then
+  echo "Database already initialized. Running migrations..."
+  bundle exec rails db:migrate
+else
+  echo "Database not initialized. Loading schema..."
+  DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rails db:schema:load
+fi
 
 # Iniciar el servidor
 echo "Starting Rails server..."
