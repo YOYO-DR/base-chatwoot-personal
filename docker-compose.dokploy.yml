@@ -9,6 +9,8 @@ x-base: &base
 services:
   rails:
     <<: *base
+    depends_on:
+      - postgres
     environment:
       - NODE_ENV=production
       - RAILS_ENV=production
@@ -21,10 +23,11 @@ services:
     restart: always
     networks:
       - dokploy-network
-      - default
 
   sidekiq:
     <<: *base
+    depends_on:
+      - postgres
     environment:
       - NODE_ENV=production
       - RAILS_ENV=production
@@ -33,10 +36,20 @@ services:
     restart: always
     networks:
       - dokploy-network
-      - default
 
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=chatwoot
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password123
+      
 volumes:
   storage_data:
+  postgres_data:
 
 networks:
   dokploy-network:
